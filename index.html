@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GA Repair Service</title>
+    <title>GA Maintenance Mobile Service (Clean Admin)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +21,7 @@
 
     <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-60 hidden flex flex-col items-center justify-center z-50 text-white">
         <i class="fa-solid fa-spinner animate-spin text-4xl mb-2"></i>
-        <p id="loadingText" class="text-sm font-medium">กำลังโหลดข้อมูล...</p>
+        <p id="loadingText" class="text-sm font-medium">กำลังโหลดข้อมูลด้วยความเร็วสูง...</p>
     </div>
 
     <nav class="bg-indigo-600 text-white shadow-md sticky top-0 z-50">
@@ -29,10 +29,10 @@
             <div class="flex items-center justify-between h-14">
                 <div onclick="logoutAdmin()" class="flex items-center space-x-2 cursor-pointer select-none">
                     <i class="fa-solid fa-screwdriver-wrench text-xl"></i>
-                    <span class="font-bold text-lg tracking-wide">GA.ST007 Repair</span>
+                    <span class="font-bold text-lg tracking-wide">GA Repair</span>
                 </div>
                 <div>
-                    <button onclick="openLoginModal()" id="btn-login" class="px-3 py-1.5 rounded-lg bg-indigo-700 hover:bg-indigo-500 font-medium transition text-xs"><i class="fa-solid fa-lock mr-1"></i>เข้าสู่ระบบ</button>
+                    <button onclick="openLoginModal()" id="btn-login" class="px-3 py-1.5 rounded-lg bg-indigo-700 hover:bg-indigo-500 font-medium transition text-xs"><i class="fa-solid fa-lock mr-1"></i>เจ้าหน้าที่</button>
                     <button onclick="logoutAdmin()" id="btn-logout" class="hidden px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 font-medium transition text-xs shadow-sm"><i class="fa-solid fa-right-from-bracket mr-1"></i>ออกระบบ</button>
                 </div>
             </div>
@@ -44,25 +44,25 @@
         <div id="view-user" class="flex flex-col space-y-4">
             <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 w-full">
                 <h2 class="text-lg font-bold mb-3 flex items-center gap-2 text-gray-700">
-                    <i class="fa-solid fa-paper-plane text-indigo-600"></i> แบบฟอร์มแจ้งซ่อม
+                    <i class="fa-solid fa-paper-plane text-indigo-600"></i> แบบฟอร์มแจ้งซ่อมออนไลน์
                 </h2>
                 <form id="repairForm" onsubmit="handleSubmit(event)" class="space-y-3">
                     <div class="space-y-3">
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">ชื่อ-นามสกุล</label>
-                            <input type="text" id="reporter" required placeholder="เช่น อัครเดช แจ้งด่วน" class="w-full text-sm px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">ชื่อ-นามสกุล ผู้แจ้ง</label>
+                            <input type="text" id="reporter" required placeholder="เช่น สมชาย ใจดี" class="w-full text-sm px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-gray-600 mb-1">สถานที่/แผนก/ห้อง</label>
-                            <input type="text" id="location" required placeholder="เช่น ห้องประชุม ชั้น 2" class="w-full text-sm px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                            <label class="block text-xs font-semibold text-gray-600 mb-1">สถานที่ / ห้อง</label>
+                            <input type="text" id="location" required placeholder="เช่น ห้องประชุม A ชั้น 3" class="w-full text-sm px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                         </div>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">รายละเอียดปัญหาที่พบ/สิ่งที่ต้องการ</label>
-                        <textarea id="details" rows="3" required placeholder="ระบุสิ่งที่ต้องการแก้ไข เช่น แอร์ห้องประชุมไม่เย็น มีลมแต่ไม่มีความเย็น และมีน้ำหยดลงพื้น" class="w-full text-sm px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">รายละเอียดอาการชำรุด / ปัญหาที่พบ</label>
+                        <textarea id="details" rows="3" required placeholder="ระบุสิ่งที่ต้องการให้ช่างแก้ไข เช่น แอร์ห้องประชุมไม่เย็น มีลมแต่ไม่มีความเย็น และมีน้ำหยดลงพื้น" class="w-full text-sm px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none"></textarea>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">ถ่ายรูปภาพ หรือ แนบรูปภาพ</label>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">ถ่ายรูปภาพ หรือ แนบรูปภาพความเสียหาย</label>
                         <input type="file" id="beforeImg" accept="image/*" capture="environment" required class="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                     </div>
                     <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-sm text-sm">ส่งข้อมูลแจ้งซ่อม</button>
@@ -117,13 +117,13 @@
             <div class="bg-white p-3 rounded-xl border border-gray-200 shadow-sm space-y-2 text-xs">
                 <div class="flex flex-col gap-2">
                     <div class="flex justify-between items-center">
-                        <span class="font-bold text-gray-700"><i class="fa-solid fa-chart-pie mr-1 text-indigo-600"></i>รายงานและจัดการคลาวด์</span>
-                        <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-md font-semibold flex items-center gap-1 transition shadow-sm"><i class="fa-solid fa-file-excel text-sm"></i>Report Excel</button>
+                        <span class="font-bold text-gray-700"><i class="fa-solid fa-chart-pie mr-1 text-indigo-600"></i>ระบบออกรายงานและจัดการคลาวด์</span>
+                        <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-md font-semibold flex items-center gap-1 transition shadow-sm"><i class="fa-solid fa-file-excel text-sm"></i>ดาวน์โหลด Excel (.xlsx)</button>
                     </div>
                     
                     <div id="clearActionContainer" class="hidden animate-fade-in pt-1">
                         <button onclick="clearCompletedTicketsFromServer()" class="w-full bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-2 rounded-lg font-bold border border-rose-300 flex items-center justify-center gap-1.5 transition shadow-sm active:scale-95">
-                            <i class="fa-solid fa-trash-can text-sm"></i> ล้างข้อมูลงานที่ "ซ่อมเสร็จสิ้น" ออกจากระบบ
+                            <i class="fa-solid fa-trash-can text-sm"></i> ล้างข้อมูลเคสงานที่ "ซ่อมเสร็จสิ้น" ออกจากคลาวด์ทั้งหมด
                         </button>
                     </div>
                 </div>
@@ -207,7 +207,7 @@
 
     <script>
         // ⚠️ วางลิงก์ Web App URL ที่คัดลอกมาจาก Google Apps Script ตรงนี้ครับ ⚠️
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzyhg9wn0lFt2htb5W-sHcgQ0ig0SNAhANZGh1v55neJ_MVz-G_zv5WOa7Qc2paL7m4/exec"; 
+        const SCRIPT_URL = "วาง_URL_ของ_APPS_SCRIPT_ตรงนี้"; 
 
         let repairTickets = [];
         let isAdminLoggedIn = false;
@@ -311,7 +311,7 @@
         function handleLogin(e) {
             e.preventDefault();
             const passwordInput = document.getElementById('adminPassword').value;
-            if (passwordInput === '1234') {
+            if (passwordInput === 'gakorat007') {
                 isAdminLoggedIn = true;
                 closeLoginModal();
                 switchView('admin');
@@ -320,7 +320,6 @@
 
         function logoutAdmin() {
             isAdminLoggedIn = false;
-            // เมื่อออกจากระบบ ให้แอบซ่อนปุ่มลบรายการทิ้งไปเหมือนเดิมเพื่อความปลอดภัย
             document.getElementById('clearActionContainer').classList.add('hidden');
             switchView('user');
         }
@@ -460,16 +459,6 @@
             }
         }
 
-        function getFilteredTickets() {
-            const statusFilter = document.getElementById('filterStatus')?.value || 'ทั้งหมด';
-            const locationFilter = document.getElementById('filterLocation')?.value || 'ทั้งหมด';
-            return repairTickets.filter(ticket => {
-                const matchStatus = (statusFilter === 'ทั้งหมด' || ticket.status === statusFilter);
-                const matchLocation = (locationFilter === 'ทั้งหมด' || String(ticket.location).trim() === locationFilter);
-                return matchStatus && matchLocation;
-            });
-        }
-
         // ดาวน์โหลดรายงานเป็น Excel (.xlsx) และเปิดสิทธิ์ปุ่มล้างประวัติ
         async function exportToExcel() {
             const filteredData = getFilteredTickets();
@@ -534,7 +523,6 @@
                 const buffer = await workbook.xlsx.writeBuffer();
                 saveAs(new Blob([buffer]), `GA_Repair_Report_Advance_${Date.now()}.xlsx`);
                 
-                // 🔔 ไฮไลต์เด็ด: เมื่อดาวน์โหลดเรียบร้อยแล้ว ให้แสดงปุ่มเคลียร์ขยะออกจากฐานข้อมูลทันที
                 document.getElementById('clearActionContainer').classList.remove('hidden');
                 alert('สร้างรายงาน Excel สำเร็จแล้ว! ระบบเปิดฟังก์ชัน "ล้างข้อมูลเคสงาน" ให้เพื่อทำความสะอาดฐานข้อมูลคลาวด์แล้วครับ');
 
@@ -543,17 +531,13 @@
             } finally { showLoading(false); }
         }
 
-        // 🔴 ฟังก์ชันมหาเทพใหม่: ยิงคำสั่งไปลบแถวเฉพาะงานที่ซ่อมเสร็จสิ้นออกจาก Google Sheet
         async function clearCompletedTicketsFromServer() {
             const countSuccess = repairTickets.filter(t => t.status === 'ซ่อมเสร็จสิ้น').length;
-            
             if (countSuccess === 0) {
                 alert('ปัจจุบันไม่มีเคสงานที่อยู่ในสถานะ "ซ่อมเสร็จสิ้น" ให้ล้างข้อมูลครับ');
                 return;
             }
-
             const confirmCheck = confirm(`⚠️ คำเตือนความปลอดภัยของระบบคลาวด์:\n\nคุณกำลังจะลบเคสงานซ่อมที่สำเร็จแล้วจำนวน ${countSuccess} รายการ ออกจาก Google Sheet ถาวรเพื่อเพิ่มความเร็วแอปพลิเคชัน\n\n(คุณมั่นใจใช่ไหมว่าได้ตรวจสอบไฟล์ Excel ที่พึ่งดาวน์โหลดเรียบร้อยแล้ว?)`);
-            
             if (confirmCheck) {
                 showLoading(true, "กำลังทำการล้างประวัติงานซ่อมที่สำเร็จออกจากสเปรดชีต...");
                 try {
@@ -564,16 +548,12 @@
                         headers: { 'Content-Type': 'text/plain' },
                         body: JSON.stringify(payload)
                     });
-                    
                     alert('🧹 ทำความสะอาดฐานข้อมูลเสร็จสิ้น! ลบเคสงานที่ซ่อมเสร็จเรียบร้อยแล้ว');
-                    document.getElementById('clearActionContainer').classList.add('hidden'); // ซ่อนปุ่มกลับไป
-                    await fetchDataFromSheet(); // รีโหลดข้อมูลใหม่
+                    document.getElementById('clearActionContainer').classList.add('hidden'); 
+                    await fetchDataFromSheet(); 
                 } catch (error) {
                     alert('เกิดข้อผิดพลาดในการส่งคำสั่งล้างข้อมูล กรุณาลองใหม่อีกครั้ง');
-                    console.error(error);
-                } finally {
-                    showLoading(false);
-                }
+                } finally { showLoading(false); }
             }
         }
 
@@ -596,6 +576,7 @@
                 return `<span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-circle-check mr-0.5"></i>เสร็จสิ้น</span>`;
             };
 
+            // 1. Render การ์ดฝั่งพนักงาน
             const cardsContainer = document.getElementById('userStatusCardsContainer');
             if (repairTickets.length === 0) {
                 cardsContainer.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs bg-gray-50 rounded-lg border border-dashed">ยังไม่มีประวัติการแจ้งซ่อมในระบบ</div>`;
@@ -633,6 +614,7 @@
                 });
             }
 
+            // 2. Render การ์ดงานสำหรับเจ้าหน้าที่ GA (เวอร์ชันตัดหัวข้อทิ้งเพื่อความสะอาดตาตามสั่ง)
             const filteredTickets = getFilteredTickets();
             const adminCardsContainer = document.getElementById('adminTaskCardsContainer');
             
@@ -656,19 +638,19 @@
                     let beforeBtn = ticket.beforeImg === "HAS_IMAGE_PAST" ? `<span class="text-gray-400 italic">เก็บถาวรแล้ว</span>` : (ticket.beforeImg ? `<button onclick="openImageInLightbox('${ticket.beforeImg}')" class="inline-flex items-center text-indigo-600 font-semibold gap-0.5 bg-indigo-50 px-2 py-1 rounded border active:scale-95 transition"><i class="fa-solid fa-image"></i>แตะดูรูป</button>` : '-');
                     let afterBtn = ticket.afterImg === "HAS_IMAGE_PAST" ? `<span class="text-gray-400 italic">เก็บถาวรแล้ว</span>` : (ticket.afterImg ? `<button onclick="openImageInLightbox('${ticket.afterImg}')" class="inline-flex items-center text-green-700 font-semibold gap-0.5 bg-green-50 px-2 py-1 rounded border active:scale-95 transition"><i class="fa-solid fa-image"></i>แตะดูรูป</button>` : '');
 
+                    // [แก้ไขจุดนี้] นำแท็ก h4 หัวข้อแจ้งซ่อมออกไป และจัดวางวันเวลากับสถานที่ให้อ่านง่ายขึ้น
                     card.innerHTML = `
-                        <div class="flex justify-between items-start">
-                            <div class="space-y-0.5 max-w-[70%]">
+                        <div class="flex justify-between items-start gap-2">
+                            <div class="space-y-0.5">
                                 <span class="text-[10px] text-gray-400 font-medium block"><i class="fa-solid fa-calendar mr-0.5"></i>แจ้งเมื่อ: ${formatThaiDate(ticket.createdDate)}</span>
-                                <h4 class="font-bold text-gray-800 text-sm truncate">${ticket.details}</h4>
-                                <span class="text-indigo-600 font-semibold text-[11px] block"><i class="fa-solid fa-location-dot mr-0.5"></i>${ticket.location}</span>
+                                <span class="text-indigo-600 font-bold text-sm block pt-0.5"><i class="fa-solid fa-location-dot mr-0.5"></i>${ticket.location}</span>
                             </div>
-                            <div class="shrink-0">${getStatusBadge(ticket.status)}</div>
+                            <div class="shrink-0 pt-0.5">${getStatusBadge(ticket.status)}</div>
                         </div>
                         
-                        <div class="bg-gray-50 rounded-lg p-2.5 space-y-1.5 border">
+                        <div class="bg-gray-50 rounded-lg p-2.5 space-y-1.5 border border-gray-100">
                             <div><span class="text-gray-400 text-[10px] font-medium">ผู้แจ้งปัญหา:</span> <span class="text-gray-700 font-bold">${ticket.reporter}</span></div>
-                            <div><span class="text-gray-400 text-[10px] font-medium">รายละเอียดชำรุด:</span> <p class="text-gray-700 mt-0.5 text-[11px] whitespace-pre-line">${ticket.details}</p></div>
+                            <div><span class="text-gray-400 text-[10px] font-medium">อาการชำรุดที่พบ:</span> <p class="text-gray-700 mt-0.5 text-[11px] font-medium whitespace-pre-line leading-relaxed">${ticket.details}</p></div>
                         </div>
 
                         <div class="flex items-center gap-2 py-1">
@@ -682,7 +664,7 @@
                                     ${afterBtn}
                                 </div>
                                 <div class="ml-auto text-right text-[10px] text-gray-400 font-medium">
-                                    ซ่อมเสร็จสิ้นเมื่อ:<br><span class="text-gray-600 font-bold">${formatThaiDate(ticket.finishedDate)} น.</span>
+                                    ซ่อมเสร็จเมื่อ:<br><span class="text-gray-600 font-bold">${formatThaiDate(ticket.finishedDate)} น.</span>
                                 </div>
                             ` : ''}
                         </div>
