@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GA Maintenance Mobile Service (Fix Render)</title>
+    <title>GA Maintenance Mobile Service (Excel & Clean Edition)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -214,11 +214,9 @@
 
         function showLoading(show, text = "กำลังดึงข้อมูลด้วยความเร็วสูง...") {
             const overlay = document.getElementById('loadingOverlay');
-            if(overlay) {
-                document.getElementById('loadingText').innerText = text;
-                if (show) overlay.classList.remove('hidden');
-                else overlay.classList.add('hidden');
-            }
+            document.getElementById('loadingText').innerText = text;
+            if (show) overlay.classList.remove('hidden');
+            else overlay.classList.add('hidden');
         }
 
         function compressImage(file) {
@@ -280,7 +278,7 @@
                     return `${day}/${month}/2569 ${hours}:${minutes}:${seconds}`;
                 }
                 if (cleanString.includes('/2026') || cleanString.includes('-2026')) return cleanString.replace('2026', '2569');
-            } catch (e) { }
+            } catch (e) { console.error(e); }
             return dateString;
         }
 
@@ -322,6 +320,7 @@
 
         function logoutAdmin() {
             isAdminLoggedIn = false;
+            // เมื่อออกจากระบบ ให้แอบซ่อนปุ่มลบรายการทิ้งไปเหมือนเดิมเพื่อความปลอดภัย
             document.getElementById('clearActionContainer').classList.add('hidden');
             switchView('user');
         }
@@ -440,6 +439,7 @@
                     await fetchDataFromSheet();
                 } catch (error) { 
                     alert('เชื่อมต่อคลาวด์ไม่สำเร็จ แต่ข้อมูลอาจจะบันทึกแล้ว กรุณากดปุ่มรีเฟรชหน้าเว็บอีกครั้ง');
+                    console.error(error); 
                 } finally { 
                     showLoading(false); 
                 }
@@ -448,6 +448,29 @@
             }
         }
 
+        function toggleCardDetail(id, suffix = '') {
+            const detailSection = document.getElementById(`detail-${id}${suffix}`);
+            const icon = document.getElementById(`icon-${id}${suffix}`);
+            if(detailSection.classList.contains('hidden')) {
+                detailSection.classList.remove('hidden');
+                if(icon) icon.className = "fa-solid fa-chevron-up text-gray-400 text-xs";
+            } else {
+                detailSection.classList.add('hidden');
+                if(icon) icon.className = "fa-solid fa-chevron-down text-gray-400 text-xs";
+            }
+        }
+
+        function getFilteredTickets() {
+            const statusFilter = document.getElementById('filterStatus')?.value || 'ทั้งหมด';
+            const locationFilter = document.getElementById('filterLocation')?.value || 'ทั้งหมด';
+            return repairTickets.filter(ticket => {
+                const matchStatus = (statusFilter === 'ทั้งหมด' || ticket.status === statusFilter);
+                const matchLocation = (locationFilter === 'ทั้งหมด' || String(ticket.location).trim() === locationFilter);
+                return matchStatus && matchLocation;
+            });
+        }
+
+        // ดาวน์โหลดรายงานเป็น Excel (.xlsx) และเปิดสิทธิ์ปุ่มล้างประวัติ
         async function exportToExcel() {
             const filteredData = getFilteredTickets();
             if (filteredData.length === 0) { alert('ไม่มีข้อมูลตามเงื่อนไขที่จะส่งออกรายงาน'); return; }
@@ -511,6 +534,7 @@
                 const buffer = await workbook.xlsx.writeBuffer();
                 saveAs(new Blob([buffer]), `GA_Repair_Report_Advance_${Date.now()}.xlsx`);
                 
+                // 🔔 ไฮไลต์เด็ด: เมื่อดาวน์โหลดเรียบร้อยแล้ว ให้แสดงปุ่มเคลียร์ขยะออกจากฐานข้อมูลทันที
                 document.getElementById('clearActionContainer').classList.remove('hidden');
                 alert('สร้างรายงาน Excel สำเร็จแล้ว! ระบบเปิดฟังก์ชัน "ล้างข้อมูลเคสงาน" ให้เพื่อทำความสะอาดฐานข้อมูลคลาวด์แล้วครับ');
 
@@ -519,13 +543,17 @@
             } finally { showLoading(false); }
         }
 
+        // 🔴 ฟังก์ชันมหาเทพใหม่: ยิงคำสั่งไปลบแถวเฉพาะงานที่ซ่อมเสร็จสิ้นออกจาก Google Sheet
         async function clearCompletedTicketsFromServer() {
             const countSuccess = repairTickets.filter(t => t.status === 'ซ่อมเสร็จสิ้น').length;
+            
             if (countSuccess === 0) {
                 alert('ปัจจุบันไม่มีเคสงานที่อยู่ในสถานะ "ซ่อมเสร็จสิ้น" ให้ล้างข้อมูลครับ');
                 return;
             }
+
             const confirmCheck = confirm(`⚠️ คำเตือนความปลอดภัยของระบบคลาวด์:\n\nคุณกำลังจะลบเคสงานซ่อมที่สำเร็จแล้วจำนวน ${countSuccess} รายการ ออกจาก Google Sheet ถาวรเพื่อเพิ่มความเร็วแอปพลิเคชัน\n\n(คุณมั่นใจใช่ไหมว่าได้ตรวจสอบไฟล์ Excel ที่พึ่งดาวน์โหลดเรียบร้อยแล้ว?)`);
+            
             if (confirmCheck) {
                 showLoading(true, "กำลังทำการล้างประวัติงานซ่อมที่สำเร็จออกจากสเปรดชีต...");
                 try {
@@ -536,16 +564,19 @@
                         headers: { 'Content-Type': 'text/plain' },
                         body: JSON.stringify(payload)
                     });
+                    
                     alert('🧹 ทำความสะอาดฐานข้อมูลเสร็จสิ้น! ลบเคสงานที่ซ่อมเสร็จเรียบร้อยแล้ว');
-                    document.getElementById('clearActionContainer').classList.add('hidden'); 
-                    await fetchDataFromSheet(); 
+                    document.getElementById('clearActionContainer').classList.add('hidden'); // ซ่อนปุ่มกลับไป
+                    await fetchDataFromSheet(); // รีโหลดข้อมูลใหม่
                 } catch (error) {
                     alert('เกิดข้อผิดพลาดในการส่งคำสั่งล้างข้อมูล กรุณาลองใหม่อีกครั้ง');
-                } finally { showLoading(false); }
+                    console.error(error);
+                } finally {
+                    showLoading(false);
+                }
             }
         }
 
-        // ================= Fix Render Logic (ซ่อมจุดขัดข้องตัวแปรแสดงผลทั้งหมด) =================
         function render() {
             const pending = repairTickets.filter(t => t.status === 'รอดำเนินการ').length;
             const progress = repairTickets.filter(t => t.status === 'กำลังดำเนินการ').length;
@@ -565,60 +596,48 @@
                 return `<span class="bg-green-100 text-green-800 text-[10px] font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-circle-check mr-0.5"></i>เสร็จสิ้น</span>`;
             };
 
-            // 1. วาดการ์ดฝั่งพนักงาน (User View)
             const cardsContainer = document.getElementById('userStatusCardsContainer');
-            if(cardsContainer) {
-                if (repairTickets.length === 0) {
-                    cardsContainer.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs bg-gray-50 rounded-lg border border-dashed">ยังไม่มีประวัติการแจ้งซ่อมในระบบ</div>`;
-                } else {
-                    cardsContainer.innerHTML = '';
-                    [...repairTickets].reverse().forEach(ticket => {
-                        const card = document.createElement('div');
-                        card.className = "bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden text-xs cursor-pointer";
-                        card.setAttribute('onclick', `toggleCardDetail('${ticket.id}', '-user')`);
-                        
-                        // เช็คและแสดงผลข้อความให้ปลอดภัยจากบั๊ก
-                        let displayDetail = ticket.details || "-";
-                        let shortText = displayDetail.length > 30 ? displayDetail.substring(0, 28) + "..." : displayDetail;
-                        
-                        let beforeImgHtml = ticket.beforeImg === "HAS_IMAGE_PAST" ? `<div class="h-16 w-24 bg-gray-100 border text-[10px] text-gray-400 flex items-center justify-center p-1 text-center rounded">รูปภาพเก่าถูกเก็บถาวร</div>` : (ticket.beforeImg ? `<div onclick="openImageInLightbox('${ticket.beforeImg}')" class="block rounded border bg-white overflow-hidden max-w-[120px] active:scale-95 transition"><img src="${ticket.beforeImg}" class="h-16 w-full object-cover"></div>` : '-');
-                        let afterImgHtml = ticket.afterImg === "HAS_IMAGE_PAST" ? `<div class="h-16 w-24 bg-gray-100 border text-[10px] text-gray-400 flex items-center justify-center p-1 text-center rounded">รูปภาพเก่าถูกเก็บถาวร</div>` : (ticket.afterImg ? `<div onclick="openImageInLightbox('${ticket.afterImg}')" class="block rounded border bg-white overflow-hidden max-w-[120px] active:scale-95 transition"><img src="${ticket.afterImg}" class="h-16 w-full object-cover"></div>` : `<div class="h-16 max-w-[120px] bg-gray-100 rounded flex items-center justify-center text-gray-400 border border-dashed text-[10px]">รอช่างดำเนินการ</div>`);
+            if (repairTickets.length === 0) {
+                cardsContainer.innerHTML = `<div class="text-center py-6 text-gray-400 text-xs bg-gray-50 rounded-lg border border-dashed">ยังไม่มีประวัติการแจ้งซ่อมในระบบ</div>`;
+            } else {
+                cardsContainer.innerHTML = '';
+                [...repairTickets].reverse().forEach(ticket => {
+                    const card = document.createElement('div');
+                    card.className = "bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden text-xs";
+                    card.setAttribute('onclick', `toggleCardDetail('${ticket.id}', '-user')`);
+                    
+                    let beforeImgHtml = ticket.beforeImg === "HAS_IMAGE_PAST" ? `<div class="h-16 w-24 bg-gray-100 border text-[10px] text-gray-400 flex items-center justify-center p-1 text-center rounded">รูปภาพเก่าถูกเก็บถาวร</div>` : (ticket.beforeImg ? `<div onclick="openImageInLightbox('${ticket.beforeImg}')" class="block rounded border bg-white overflow-hidden max-w-[120px] active:scale-95 transition"><img src="${ticket.beforeImg}" class="h-16 w-full object-cover"></div>` : '-');
+                    let afterImgHtml = ticket.afterImg === "HAS_IMAGE_PAST" ? `<div class="h-16 w-24 bg-gray-100 border text-[10px] text-gray-400 flex items-center justify-center p-1 text-center rounded">รูปภาพเก่าถูกเก็บถาวร</div>` : (ticket.afterImg ? `<div onclick="openImageInLightbox('${ticket.afterImg}')" class="block rounded border bg-white overflow-hidden max-w-[120px] active:scale-95 transition"><img src="${ticket.afterImg}" class="h-16 w-full object-cover"></div>` : `<div class="h-16 max-w-[120px] bg-gray-100 rounded flex items-center justify-center text-gray-400 border border-dashed text-[10px]">รอช่างดำเนินการ</div>`);
 
-                        card.innerHTML = `
-                            <div class="p-3 flex justify-between items-center gap-2">
-                                <div class="space-y-0.5 max-w-[70%]">
-                                    <div class="text-[10px] text-gray-400 font-medium"><i class="fa-solid fa-clock mr-0.5"></i>${formatThaiDate(ticket.createdDate)}</div>
-                                    <div class="font-bold text-gray-800 text-sm truncate">${shortText}</div>
-                                    <div class="text-indigo-600 font-medium text-[11px]"><i class="fa-solid fa-location-dot mr-0.5"></i>${ticket.location || '-'}</div>
-                                </div>
-                                <div class="flex items-center space-x-1.5 shrink-0">
-                                    ${getStatusBadge(ticket.status)}
-                                    <i id="icon-${ticket.id}-user" class="fa-solid fa-chevron-down text-gray-400"></i>
-                                </div>
+                    card.innerHTML = `
+                        <div class="p-3 flex justify-between items-center gap-2">
+                            <div class="space-y-0.5 max-w-[70%]">
+                                <div class="text-[10px] text-gray-400 font-medium"><i class="fa-solid fa-clock mr-0.5"></i>${formatThaiDate(ticket.createdDate)}</div>
+                                <div class="font-bold text-gray-800 text-sm truncate">${ticket.details}</div>
+                                <div class="text-indigo-600 font-medium text-[11px]"><i class="fa-solid fa-location-dot mr-0.5"></i>${ticket.location}</div>
                             </div>
-                            <div id="detail-${ticket.id}-user" class="hidden border-t bg-gray-50/50 p-3 space-y-2.5" onclick="event.stopPropagation();">
-                                <div><span class="text-gray-400 font-medium block text-[10px]">ผู้แจ้ง:</span><span class="text-gray-700 font-medium">${ticket.reporter || '-'}</span></div>
-                                <div><span class="text-gray-400 font-medium block text-[10px]">รายละเอียดอาการชำรุด:</span><span class="text-gray-700 block bg-white border p-2 rounded-md whitespace-pre-line shadow-inner">${displayDetail}</span></div>
-                                <div class="grid grid-cols-2 gap-2 pt-1">
-                                    <div><span class="text-gray-400 text-[10px] block mb-1">รูปก่อนซ่อม:</span>${beforeImgHtml}</div>
-                                    <div><span class="text-gray-400 text-[10px] block mb-1">รูปหลังซ่อม:</span>${afterImgHtml}${ticket.afterImg ? `<span class="text-[9px] text-green-600 font-bold block mt-1.5"><i class="fa-solid fa-calendar-check mr-0.5"></i>เสร็จเมื่อ:<br>${formatThaiDate(ticket.finishedDate)}</span>` : ''}</div>
-                                </div>
+                            <div class="flex items-center space-x-1.5 shrink-0">
+                                ${getStatusBadge(ticket.status)}
+                                <i id="icon-${ticket.id}-user" class="fa-solid fa-chevron-down text-gray-400"></i>
                             </div>
-                        `; cardsContainer.appendChild(card);
-                    });
-                }
+                        </div>
+                        <div id="detail-${ticket.id}-user" class="hidden border-t bg-gray-50/50 p-3 space-y-2.5" onclick="event.stopPropagation();">
+                            <div><span class="text-gray-400 font-medium block text-[10px]">ผู้แจ้ง:</span><span class="text-gray-700 font-medium">${ticket.reporter}</span></div>
+                            <div><span class="text-gray-400 font-medium block text-[10px]">รายละเอียดอาการชำรุด:</span><span class="text-gray-700 block bg-white border p-2 rounded-md whitespace-pre-line shadow-inner">${ticket.details}</span></div>
+                            <div class="grid grid-cols-2 gap-2 pt-1">
+                                <div><span class="text-gray-400 text-[10px] block mb-1">รูปก่อนซ่อม:</span>${beforeImgHtml}</div>
+                                <div><span class="text-gray-400 text-[10px] block mb-1">รูปหลังซ่อม:</span>${afterImgHtml}${ticket.afterImg ? `<span class="text-[9px] text-green-600 font-bold block mt-1.5"><i class="fa-solid fa-calendar-check mr-0.5"></i>เสร็จเมื่อ:<br>${formatThaiDate(ticket.finishedDate)}</span>` : ''}</div>
+                            </div>
+                        </div>
+                    `; cardsContainer.appendChild(card);
+                });
             }
 
-            // 2. วาดการ์ดฝั่งเจ้าหน้าที่ (Admin View) - [ตัดข้อมูลหัวข้อปัญหาทิ้งอย่างสมบูรณ์แบบเรียบร้อย]
             const filteredTickets = getFilteredTickets();
             const adminCardsContainer = document.getElementById('adminTaskCardsContainer');
             
             if(adminCardsContainer) {
-                const rateEl = document.getElementById('reportSuccessRate');
-                if(rateEl) {
-                    rateEl.innerText = `${filteredTickets.length > 0 ? Math.round((filteredTickets.filter(t => t.status === 'ซ่อมเสร็จสิ้น').length / filteredTickets.length) * 100) : 0}%`;
-                }
-                
+                document.getElementById('reportSuccessRate').innerText = `${filteredTickets.length > 0 ? Math.round((filteredTickets.filter(t => t.status === 'ซ่อมเสร็จสิ้น').length / filteredTickets.length) * 100) : 0}%`;
                 adminCardsContainer.innerHTML = filteredTickets.length === 0 ? `<div class="text-center py-8 text-gray-400 text-xs bg-white rounded-xl border border-dashed">ไม่พบงานซ่อมตามเงื่อนไขตัวกรอง</div>` : '';
                 
                 [...filteredTickets].reverse().forEach(ticket => {
@@ -638,17 +657,18 @@
                     let afterBtn = ticket.afterImg === "HAS_IMAGE_PAST" ? `<span class="text-gray-400 italic">เก็บถาวรแล้ว</span>` : (ticket.afterImg ? `<button onclick="openImageInLightbox('${ticket.afterImg}')" class="inline-flex items-center text-green-700 font-semibold gap-0.5 bg-green-50 px-2 py-1 rounded border active:scale-95 transition"><i class="fa-solid fa-image"></i>แตะดูรูป</button>` : '');
 
                     card.innerHTML = `
-                        <div class="flex justify-between items-start gap-2">
-                            <div class="space-y-0.5">
+                        <div class="flex justify-between items-start">
+                            <div class="space-y-0.5 max-w-[70%]">
                                 <span class="text-[10px] text-gray-400 font-medium block"><i class="fa-solid fa-calendar mr-0.5"></i>แจ้งเมื่อ: ${formatThaiDate(ticket.createdDate)}</span>
-                                <span class="text-indigo-600 font-bold text-sm block pt-0.5"><i class="fa-solid fa-location-dot mr-0.5"></i>${ticket.location || '-'}</span>
+                                <h4 class="font-bold text-gray-800 text-sm truncate">${ticket.details}</h4>
+                                <span class="text-indigo-600 font-semibold text-[11px] block"><i class="fa-solid fa-location-dot mr-0.5"></i>${ticket.location}</span>
                             </div>
-                            <div class="shrink-0 pt-0.5">${getStatusBadge(ticket.status)}</div>
+                            <div class="shrink-0">${getStatusBadge(ticket.status)}</div>
                         </div>
                         
-                        <div class="bg-gray-50 rounded-lg p-2.5 space-y-1.5 border border-gray-100">
-                            <div><span class="text-gray-400 text-[10px] font-medium">ผู้แจ้งปัญหา:</span> <span class="text-gray-700 font-bold">${ticket.reporter || '-'}</span></div>
-                            <div><span class="text-gray-400 text-[10px] font-medium">อาการชำรุดที่พบ:</span> <p class="text-gray-700 mt-0.5 text-[11px] font-medium whitespace-pre-line leading-relaxed">${ticket.details || '-'}</p></div>
+                        <div class="bg-gray-50 rounded-lg p-2.5 space-y-1.5 border">
+                            <div><span class="text-gray-400 text-[10px] font-medium">ผู้แจ้งปัญหา:</span> <span class="text-gray-700 font-bold">${ticket.reporter}</span></div>
+                            <div><span class="text-gray-400 text-[10px] font-medium">รายละเอียดชำรุด:</span> <p class="text-gray-700 mt-0.5 text-[11px] whitespace-pre-line">${ticket.details}</p></div>
                         </div>
 
                         <div class="flex items-center gap-2 py-1">
@@ -662,7 +682,7 @@
                                     ${afterBtn}
                                 </div>
                                 <div class="ml-auto text-right text-[10px] text-gray-400 font-medium">
-                                    ซ่อมเสร็จเมื่อ:<br><span class="text-gray-600 font-bold">${formatThaiDate(ticket.finishedDate)} น.</span>
+                                    ซ่อมเสร็จสิ้นเมื่อ:<br><span class="text-gray-600 font-bold">${formatThaiDate(ticket.finishedDate)} น.</span>
                                 </div>
                             ` : ''}
                         </div>
