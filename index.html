@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GA Maintenance Mobile Service (Clean Admin)</title>
+    <title>GA Repair Service</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,7 +21,7 @@
 
     <div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-60 hidden flex flex-col items-center justify-center z-50 text-white">
         <i class="fa-solid fa-spinner animate-spin text-4xl mb-2"></i>
-        <p id="loadingText" class="text-sm font-medium">กำลังโหลดข้อมูลด้วยความเร็วสูง...</p>
+        <p id="loadingText" class="text-sm font-medium">กำลังโหลดข้อมูล...</p>
     </div>
 
     <nav class="bg-indigo-600 text-white shadow-md sticky top-0 z-50">
@@ -32,7 +32,7 @@
                     <span class="font-bold text-lg tracking-wide">GA Repair</span>
                 </div>
                 <div>
-                    <button onclick="openLoginModal()" id="btn-login" class="px-3 py-1.5 rounded-lg bg-indigo-700 hover:bg-indigo-500 font-medium transition text-xs"><i class="fa-solid fa-lock mr-1"></i>เจ้าหน้าที่</button>
+                    <button onclick="openLoginModal()" id="btn-login" class="px-3 py-1.5 rounded-lg bg-indigo-700 hover:bg-indigo-500 font-medium transition text-xs"><i class="fa-solid fa-lock mr-1"></i>เข้าสู่ระบบ</button>
                     <button onclick="logoutAdmin()" id="btn-logout" class="hidden px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 font-medium transition text-xs shadow-sm"><i class="fa-solid fa-right-from-bracket mr-1"></i>ออกระบบ</button>
                 </div>
             </div>
@@ -207,7 +207,7 @@
 
     <script>
         // ⚠️ วางลิงก์ Web App URL ที่คัดลอกมาจาก Google Apps Script ตรงนี้ครับ ⚠️
-        const SCRIPT_URL = "วาง_URL_ของ_APPS_SCRIPT_ตรงนี้"; 
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzyhg9wn0lFt2htb5W-sHcgQ0ig0SNAhANZGh1v55neJ_MVz-G_zv5WOa7Qc2paL7m4/exec"; 
 
         let repairTickets = [];
         let isAdminLoggedIn = false;
