@@ -379,44 +379,22 @@
             };
 
             try {
-                await fetch(SCRIPT_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify(payload),
-                    mode: 'no-cors'
-                });
-                
-                setTimeout(async () => {
-                    document.getElementById('repairForm').reset();
-                    alert('ส่งข้อมูลแจ้งซ่อมเรียบร้อยแล้ว!');
-                    await fetchDataFromSheet();
-                    showLoading(false);
-                }, 1500);
-
-            } catch (error) { 
-                alert('เกิดข้อผิดพลาด กรุณาลองใหม่'); 
-                showLoading(false);
-            } 
+                await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+                document.getElementById('repairForm').reset();
+                alert('ส่งข้อมูลแจ้งซ่อมเรียบร้อยแล้ว!');
+                await fetchDataFromSheet();
+            } catch (error) { alert('เกิดข้อผิดพลาด กรุณาลองใหม่'); } 
+            finally { showLoading(false); }
         }
 
         async function updateStatus(id, newStatus) {
             showLoading(true, "กำลังบันทึกการรับงานซ่อม...");
             const payload = { action: "updateStatus", id: id, status: newStatus };
             try {
-                await fetch(SCRIPT_URL, { 
-                    method: 'POST', 
-                    body: JSON.stringify(payload),
-                    mode: 'no-cors'
-                });
-                
-                setTimeout(async () => {
-                    await fetchDataFromSheet();
-                    showLoading(false);
-                }, 1200);
-
-            } catch (error) { 
-                console.error(error); 
-                showLoading(false);
-            } 
+                await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+                await fetchDataFromSheet();
+            } catch (error) { console.error(error); } 
+            finally { showLoading(false); }
         }
 
         function openCloseJobModal(id) {
@@ -429,7 +407,6 @@
             document.getElementById('closeJobForm').reset();
         }
 
-        /* 🛠️ แก้ไขเทคนิคชุดนี้เพื่อแก้บั๊กคำเตือนบน iOS Safari โดยเฉพาะ */
         async function saveCloseJob(e) {
             e.preventDefault();
             const id = document.getElementById('modalTicketId').value;
@@ -450,24 +427,18 @@
                         finishedDate: new Date().toLocaleString('th-TH')
                     };
 
-                    // บังคับใช้ no-cors ป้องกัน iOS บล็อก Preflight/Redirect ของ Google Apps Script
-                    fetch(SCRIPT_URL, { 
+                    await fetch(SCRIPT_URL, { 
                         method: 'POST',
-                        body: JSON.stringify(payload),
-                        mode: 'no-cors' 
+                        body: JSON.stringify(payload)
                     });
                     
-                    // หน่วงเวลา 1.5 วินาทีเพื่อให้สัญญาณเครือข่ายส่งรูปภาพขึ้นเซิร์ฟเวอร์เรียบร้อย
-                    setTimeout(async () => {
-                        closeModal();
-                        alert('ส่งข้อมูลปิดงานเรียบร้อยแล้ว!');
-                        await fetchDataFromSheet();
-                        showLoading(false);
-                    }, 1500);
-
+                    closeModal();
+                    alert('ปิดงานซ่อมบนระบบคลาวด์เสร็จสมบูรณ์!');
+                    await fetchDataFromSheet();
                 } catch (error) { 
-                    alert('เกิดข้อผิดพลาดในการประมวลผลรูปภาพ กรุณาลองใหม่อีกครั้ง');
+                    alert('เชื่อมต่อคลาวด์ไม่สำเร็จ แต่ข้อมูลอาจจะบันทึกแล้ว กรุณากดปุ่มรีเฟรชหน้าเว็บอีกครั้ง');
                     console.error(error); 
+                } finally { 
                     showLoading(false); 
                 }
             } else {
@@ -584,21 +555,18 @@
                     const payload = { action: "clearSuccess" };
                     await fetch(SCRIPT_URL, {
                         method: 'POST',
-                        body: JSON.stringify(payload),
-                        mode: 'no-cors'
+                        body: JSON.stringify(payload)
                     });
                     
-                    setTimeout(async () => {
-                        alert('🧹 ทำความสะอาดฐานข้อมูลเสร็จสิ้น! ลบเคสงานที่ซ่อมเสร็จเรียบร้อยแล้ว');
-                        document.getElementById('clearActionContainer').classList.add('hidden'); 
-                        await fetchDataFromSheet(); 
-                        showLoading(false);
-                    }, 1200);
+                    alert('🧹 ทำความสะอาดฐานข้อมูลเสร็จสิ้น! ลบเคสงานที่ซ่อมเสร็จเรียบร้อยแล้ว');
+                    document.getElementById('clearActionContainer').classList.add('hidden'); 
+                    await fetchDataFromSheet(); 
                 } catch (error) {
                     alert('เกิดข้อผิดพลาดในการส่งคำสั่งล้างข้อมูล กรุณาลองใหม่อีกครั้ง');
                     console.error(error);
+                } finally {
                     showLoading(false);
-                } 
+                }
             }
         }
 
