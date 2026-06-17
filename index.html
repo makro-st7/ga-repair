@@ -15,6 +15,8 @@
 
     <style>
         body { font-family: 'Prompt', sans-serif; -webkit-tap-highlight-color: transparent; }
+        /* แก้ไขให้ทุกปุ่มหรือสิ่งที่มี onclick บน iOS สามารถกดได้ง่ายขึ้น */
+        [onclick] { cursor: pointer !important; touch-action: manipulation; }
     </style>
 </head>
 <body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
@@ -32,8 +34,8 @@
                     <span class="font-bold text-lg tracking-wide">St.7 แจ้งงานซ่อม GA</span>
                 </div>
                 <div>
-                    <button onclick="openLoginModal()" id="btn-login" class="px-3 py-1.5 rounded-lg bg-indigo-700 hover:bg-indigo-500 font-medium transition text-xs"><i class="fa-solid fa-lock mr-1"></i>เข้าสู่ระบบ</button>
-                    <button onclick="logoutAdmin()" id="btn-logout" class="hidden px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 font-medium transition text-xs shadow-sm"><i class="fa-solid fa-right-from-bracket mr-1"></i>ออกระบบ</button>
+                    <button type="button" onclick="openLoginModal()" id="btn-login" class="px-3 py-1.5 rounded-lg bg-indigo-700 hover:bg-indigo-500 font-medium transition text-xs"><i class="fa-solid fa-lock mr-1"></i>เข้าสู่ระบบ</button>
+                    <button type="button" onclick="logoutAdmin()" id="btn-logout" class="hidden px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-700 font-medium transition text-xs shadow-sm"><i class="fa-solid fa-right-from-bracket mr-1"></i>ออกระบบ</button>
                 </div>
             </div>
         </div>
@@ -63,7 +65,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">ถ่ายรูปภาพ หรือ แนบรูปภาพ</label>
-                        <input type="file" id="beforeImg" accept="image/*" capture="environment" required class="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                        <input type="file" id="beforeImg" accept="image/*" required class="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                     </div>
                     <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-lg font-semibold hover:bg-indigo-700 transition shadow-sm text-sm">ส่งข้อมูลแจ้งซ่อม</button>
                 </form>
@@ -74,7 +76,7 @@
                     <h3 class="text-base font-bold text-gray-700 flex items-center gap-1.5">
                         <i class="fa-solid fa-clock-history text-indigo-600"></i> ติดตามสถานะงานซ่อม
                     </h3>
-                    <button onclick="fetchDataFromSheet()" class="text-indigo-600 text-xs font-medium"><i class="fa-solid fa-rotate mr-0.5"></i>รีเฟรช</button>
+                    <button type="button" onclick="fetchDataFromSheet()" class="text-indigo-600 text-xs font-medium"><i class="fa-solid fa-rotate mr-0.5"></i>รีเฟรช</button>
                 </div>
                 <div id="userStatusCardsContainer" class="space-y-2 max-h-[400px] overflow-y-auto pr-0.5">
                     <div class="text-center py-6 text-xs text-gray-400">กำลังโหลดประวัติจากระบบคลาวด์...</div>
@@ -118,11 +120,11 @@
                 <div class="flex flex-col gap-2">
                     <div class="flex justify-between items-center">
                         <span class="font-bold text-gray-700"><i class="fa-solid fa-chart-pie mr-1 text-indigo-600"></i>รายงานและจัดการคลาวด์</span>
-                        <button onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-md font-semibold flex items-center gap-1 transition shadow-sm"><i class="fa-solid fa-file-excel text-sm"></i>Report Excel</button>
+                        <button type="button" onclick="exportToExcel()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1.5 rounded-md font-semibold flex items-center gap-1 transition shadow-sm"><i class="fa-solid fa-file-excel text-sm"></i>Report Excel</button>
                     </div>
                     
                     <div id="clearActionContainer" class="hidden animate-fade-in pt-1">
-                        <button onclick="clearCompletedTicketsFromServer()" class="w-full bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-2 rounded-lg font-bold border border-rose-300 flex items-center justify-center gap-1.5 transition shadow-sm active:scale-95">
+                        <button type="button" onclick="clearCompletedTicketsFromServer()" class="w-full bg-rose-100 hover:bg-rose-200 text-rose-700 px-3 py-2 rounded-lg font-bold border border-rose-300 flex items-center justify-center gap-1.5 transition shadow-sm active:scale-95">
                             <i class="fa-solid fa-trash-can text-sm"></i> ล้างข้อมูลงานที่ "ซ่อมเสร็จสิ้น" ออกจากระบบ
                         </button>
                     </div>
@@ -183,7 +185,7 @@
                 <input type="hidden" id="modalTicketId">
                 <div class="mb-4">
                     <label class="block text-xs font-semibold text-gray-600 mb-1">ถ่ายรูปภาพ หรือ แนบรูปภาพหลังซ่อมเสร็จ</label>
-                    <input type="file" id="afterImg" accept="image/*" capture="environment" required class="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+                    <input type="file" id="afterImg" accept="image/*" required class="w-full text-xs text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
                 </div>
                 <div class="flex space-x-2">
                     <button type="button" onclick="closeModal()" class="w-1/2 py-1.5 border border-gray-300 rounded-lg text-gray-700 font-medium transition text-xs">ยกเลิก</button>
@@ -194,7 +196,7 @@
     </div>
 
     <div id="imageLightboxModal" onclick="closeLightbox()" class="fixed inset-0 bg-black bg-opacity-90 hidden flex flex-col items-center justify-center p-4 z-[100] cursor-pointer">
-        <button onclick="closeLightbox()" class="absolute top-4 right-4 text-white text-2xl p-2 focus:outline-none"><i class="fa-solid fa-xmark"></i></button>
+        <button type="button" onclick="closeLightbox()" class="absolute top-4 right-4 text-white text-2xl p-2 focus:outline-none"><i class="fa-solid fa-xmark"></i></button>
         <div class="max-w-full max-h-[80vh] flex items-center justify-center overflow-hidden rounded-lg bg-gray-900 shadow-2xl" onclick="event.stopPropagation();">
             <img id="lightboxTargetImage" src="" class="max-w-full max-h-[80vh] object-contain">
         </div>
@@ -206,7 +208,6 @@
     </footer>
 
     <script>
-        // ⚠️ วางลิงก์ Web App URL ที่คัดลอกมาจาก Google Apps Script ตรงนี้ครับ ⚠️
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzyhg9wn0lFt2htb5W-sHcgQ0ig0SNAhANZGh1v55neJ_MVz-G_zv5WOa7Qc2paL7m4/exec"; 
 
         let repairTickets = [];
@@ -320,7 +321,6 @@
 
         function logoutAdmin() {
             isAdminLoggedIn = false;
-            // เมื่อออกจากระบบ ให้แอบซ่อนปุ่มลบรายการทิ้งไปเหมือนเดิมเพื่อความปลอดภัย
             document.getElementById('clearActionContainer').classList.add('hidden');
             switchView('user');
         }
@@ -429,8 +429,6 @@
 
                     await fetch(SCRIPT_URL, { 
                         method: 'POST',
-                        mode: 'cors',
-                        headers: { 'Content-Type': 'text/plain' }, 
                         body: JSON.stringify(payload)
                     });
                     
@@ -470,7 +468,6 @@
             });
         }
 
-        // ดาวน์โหลดรายงานเป็น Excel (.xlsx) และเปิดสิทธิ์ปุ่มล้างประวัติ
         async function exportToExcel() {
             const filteredData = getFilteredTickets();
             if (filteredData.length === 0) { alert('ไม่มีข้อมูลตามเงื่อนไขที่จะส่งออกรายงาน'); return; }
@@ -534,7 +531,6 @@
                 const buffer = await workbook.xlsx.writeBuffer();
                 saveAs(new Blob([buffer]), `GA_Repair_Report_Advance_${Date.now()}.xlsx`);
                 
-                // 🔔 ไฮไลต์เด็ด: เมื่อดาวน์โหลดเรียบร้อยแล้ว ให้แสดงปุ่มเคลียร์ขยะออกจากฐานข้อมูลทันที
                 document.getElementById('clearActionContainer').classList.remove('hidden');
                 alert('สร้างรายงาน Excel สำเร็จแล้ว! ระบบเปิดฟังก์ชัน "ล้างข้อมูลเคสงาน" ให้เพื่อทำความสะอาดฐานข้อมูลคลาวด์แล้วครับ');
 
@@ -543,7 +539,6 @@
             } finally { showLoading(false); }
         }
 
-        // 🔴 ฟังก์ชันมหาเทพใหม่: ยิงคำสั่งไปลบแถวเฉพาะงานที่ซ่อมเสร็จสิ้นออกจาก Google Sheet
         async function clearCompletedTicketsFromServer() {
             const countSuccess = repairTickets.filter(t => t.status === 'ซ่อมเสร็จสิ้น').length;
             
@@ -560,14 +555,12 @@
                     const payload = { action: "clearSuccess" };
                     await fetch(SCRIPT_URL, {
                         method: 'POST',
-                        mode: 'cors',
-                        headers: { 'Content-Type': 'text/plain' },
                         body: JSON.stringify(payload)
                     });
                     
                     alert('🧹 ทำความสะอาดฐานข้อมูลเสร็จสิ้น! ลบเคสงานที่ซ่อมเสร็จเรียบร้อยแล้ว');
-                    document.getElementById('clearActionContainer').classList.add('hidden'); // ซ่อนปุ่มกลับไป
-                    await fetchDataFromSheet(); // รีโหลดข้อมูลใหม่
+                    document.getElementById('clearActionContainer').classList.add('hidden'); 
+                    await fetchDataFromSheet(); 
                 } catch (error) {
                     alert('เกิดข้อผิดพลาดในการส่งคำสั่งล้างข้อมูล กรุณาลองใหม่อีกครั้ง');
                     console.error(error);
@@ -603,7 +596,7 @@
                 cardsContainer.innerHTML = '';
                 [...repairTickets].reverse().forEach(ticket => {
                     const card = document.createElement('div');
-                    card.className = "bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden text-xs";
+                    card.className = "bg-white rounded-lg border border-gray-200 shadow-sm overflow-hidden text-xs cursor-pointer";
                     card.setAttribute('onclick', `toggleCardDetail('${ticket.id}', '-user')`);
                     
                     let beforeImgHtml = ticket.beforeImg === "HAS_IMAGE_PAST" ? `<div class="h-16 w-24 bg-gray-100 border text-[10px] text-gray-400 flex items-center justify-center p-1 text-center rounded">รูปภาพเก่าถูกเก็บถาวร</div>` : (ticket.beforeImg ? `<div onclick="openImageInLightbox('${ticket.beforeImg}')" class="block rounded border bg-white overflow-hidden max-w-[120px] active:scale-95 transition"><img src="${ticket.beforeImg}" class="h-16 w-full object-cover"></div>` : '-');
@@ -646,15 +639,15 @@
                     
                     let mobileActionButton = '';
                     if (ticket.status === 'รอดำเนินการ') {
-                        mobileActionButton = `<button onclick="updateStatus('${ticket.id}', 'กำลังดำเนินการ')" class="w-full bg-blue-500 text-white text-xs py-2 rounded-lg font-bold shadow-sm transition active:bg-blue-600"><i class="fa-solid fa-toolbox mr-1"></i>กดเพื่อรับงานซ่อม</button>`;
+                        mobileActionButton = `<button type="button" onclick="updateStatus('${ticket.id}', 'กำลังดำเนินการ')" class="w-full bg-blue-500 text-white text-xs py-2 rounded-lg font-bold shadow-sm transition active:bg-blue-600 cursor-pointer"><i class="fa-solid fa-toolbox mr-1"></i>กดเพื่อรับงานซ่อม</button>`;
                     } else if (ticket.status === 'กำลังดำเนินการ') {
-                        mobileActionButton = `<button onclick="openCloseJobModal('${ticket.id}')" class="w-full bg-green-600 text-white text-xs py-2 rounded-lg font-bold shadow-sm transition active:bg-green-700"><i class="fa-solid fa-check-double mr-1"></i>ดำเนินการเสร็จสิ้น (ปิดงาน)</button>`;
+                        mobileActionButton = `<button type="button" onclick="openCloseJobModal('${ticket.id}')" class="w-full bg-green-600 text-white text-xs py-2 rounded-lg font-bold shadow-sm transition active:bg-green-700 cursor-pointer"><i class="fa-solid fa-check-double mr-1"></i>ดำเนินการเสร็จสิ้น (ปิดงาน)</button>`;
                     } else {
                         mobileActionButton = `<div class="w-full bg-gray-100 text-gray-400 text-center text-xs py-1.5 rounded-lg font-medium"><i class="fa-solid fa-lock mr-1"></i>ปิดเคสงานซ่อมเรียบร้อยแล้ว</div>`;
                     }
 
-                    let beforeBtn = ticket.beforeImg === "HAS_IMAGE_PAST" ? `<span class="text-gray-400 italic">เก็บถาวรแล้ว</span>` : (ticket.beforeImg ? `<button onclick="openImageInLightbox('${ticket.beforeImg}')" class="inline-flex items-center text-indigo-600 font-semibold gap-0.5 bg-indigo-50 px-2 py-1 rounded border active:scale-95 transition"><i class="fa-solid fa-image"></i>แตะดูรูป</button>` : '-');
-                    let afterBtn = ticket.afterImg === "HAS_IMAGE_PAST" ? `<span class="text-gray-400 italic">เก็บถาวรแล้ว</span>` : (ticket.afterImg ? `<button onclick="openImageInLightbox('${ticket.afterImg}')" class="inline-flex items-center text-green-700 font-semibold gap-0.5 bg-green-50 px-2 py-1 rounded border active:scale-95 transition"><i class="fa-solid fa-image"></i>แตะดูรูป</button>` : '');
+                    let beforeBtn = ticket.beforeImg === "HAS_IMAGE_PAST" ? `<span class="text-gray-400 italic">เก็บถาวรแล้ว</span>` : (ticket.beforeImg ? `<button type="button" onclick="openImageInLightbox('${ticket.beforeImg}')" class="inline-flex items-center text-indigo-600 font-semibold gap-0.5 bg-indigo-50 px-2 py-1 rounded border active:scale-95 transition cursor-pointer"><i class="fa-solid fa-image"></i>แตะดูรูป</button>` : '-');
+                    let afterBtn = ticket.afterImg === "HAS_IMAGE_PAST" ? `<span class="text-gray-400 italic">เก็บถาวรแล้ว</span>` : (ticket.afterImg ? `<button type="button" onclick="openImageInLightbox('${ticket.afterImg}')" class="inline-flex items-center text-green-700 font-semibold gap-0.5 bg-green-50 px-2 py-1 rounded border active:scale-95 transition cursor-pointer"><i class="fa-solid fa-image"></i>แตะดูรูป</button>` : '');
 
                     card.innerHTML = `
                         <div class="flex justify-between items-start">
